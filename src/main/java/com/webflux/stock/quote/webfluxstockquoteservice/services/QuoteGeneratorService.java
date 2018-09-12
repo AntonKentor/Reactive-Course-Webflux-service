@@ -7,6 +7,6 @@ import java.time.Duration;
 
 public interface QuoteGeneratorService {
 
-    public Flux<Quote> fetchQuoteStream(Duration duration);
+    Flux<Quote> fetchQuoteStream(Duration duration);
 
 }
