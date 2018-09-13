@@ -13,7 +13,6 @@ import java.time.Duration;
 
 import static org.springframework.web.reactive.function.server.ServerResponse.ok;
 
-
 @Component
 public class QuoteHandler {
 
