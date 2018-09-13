@@ -31,4 +31,9 @@ public class QuoteHandler {
                 .body(this.quoteGeneratorService.fetchQuoteStream(Duration.ofMillis(100))
                         .take(size), Quote.class);
     }
+    public Mono<ServerResponse> streamQuotes(ServerRequest serverRequest){
+        return ok()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(quoteGeneratorService.fetchQuoteStream(Duration.ofMillis(200)), Quote.class);
+    }
 }
