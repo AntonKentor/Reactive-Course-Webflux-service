@@ -1,7 +1,6 @@
 package com.webflux.stock.quote.webfluxstockquoteservice.services;
 
 import com.webflux.stock.quote.webfluxstockquoteservice.model.Quote;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.SynchronousSink;
@@ -41,6 +40,8 @@ public class QuoteGeneratorServiceImpl implements QuoteGeneratorService {
         //We use here Flux.generate to create quotes
         //Iterating on each stock starting at index 0
 
+        //Passing in a function that will take in SynchronousSink and this is a way for us to synchronize calls.
+
         return Flux.generate(() -> 0, (
                 BiFunction<Integer, SynchronousSink<Quote>, Integer>) (index, sink) -> {
             Quote updatedQuote = updateQuote(prices.get(index));
@@ -48,10 +49,16 @@ public class QuoteGeneratorServiceImpl implements QuoteGeneratorService {
             return ++index % prices.size();
         })
                 // We want to emit them with a specific period
-                //to do se, we zip that Flux with Flux.interval
-                .zipWith(Flux.interval(duration)).map(Tuple2::getT1)
+                //to do so, we zip that Flux with Flux.interval
+                //This flux will emit in a specific rate.
+                //Since zipWith generates a Tuple with [Quote, Long] and we do only want Quote, so we have to map the value
+
+                .zipWith(Flux.interval(duration))
+                .map(Tuple2::getT1)
+
                 //Because values are generated in batches
                 //we need to set their timestamp after their creation
+
                 .map(quote -> {
                     quote.setInstant(Instant.now());
                     return quote;
